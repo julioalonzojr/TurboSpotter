@@ -980,10 +980,14 @@ const btnTypeToggles = document.querySelectorAll('.btn-type-toggle');
 const aiScanningOverlay = document.getElementById('ai-scanning-overlay');
 const aiScanStatusText = document.getElementById('ai-scan-status-text');
 
-// Endpoint del Backend Seguro (en desarrollo apunta al local, en Play Store a tu URL de Vercel/Cloudflare)
-const BACKEND_ENDPOINT = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-  ? 'http://localhost:3001/api/identify'
-  : '/api/identify';
+// Endpoint del Backend Seguro en la Nube (Render Cloud AI)
+const CLOUD_API_URL = 'https://turbospotter.onrender.com/api/identify';
+const LOCAL_API_URL = 'http://localhost:3001/api/identify';
+
+// En localhost usa el servidor local; en dispositivos móviles (Android APK/Play Store) o Web usa la nube
+const BACKEND_ENDPOINT = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+  ? LOCAL_API_URL
+  : CLOUD_API_URL;
 
 // ========================================================
 // NAVEGACIÓN ENTRE VISTAS (Feed, Garaje, Ranking, Perfil)
