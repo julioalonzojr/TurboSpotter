@@ -1,0 +1,20 @@
+# Dependencias de Node
+node_modules/
+npm-debug.log*
+
+# Variables de entorno secretas (¡NUNCA subir a GitHub!)
+.env
+.env.local
+
+# Builds y temporales
+www/
+dist/
+build/
+android/app/build/
+android/.gradle/
+
+# Archivos de sistema operativo y editores
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

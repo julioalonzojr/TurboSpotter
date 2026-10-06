@@ -1,0 +1,22 @@
+{
+  "name": "turbospotter-backend",
+  "version": "1.0.0",
+  "description": "Backend seguro y serverless para TurboSpotter en Play Store",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "build": "powershell -Command \"Copy-Item 'index.html', 'style.css', 'app.js' -Destination 'www' -Force; Copy-Item 'assets' -Destination 'www\\assets' -Recurse -Force\"",
+    "sync": "npm run build && npx cap sync android",
+    "open:android": "npx cap open android"
+  },
+  "dependencies": {
+    "@capacitor/android": "^8.5.2",
+    "@capacitor/cli": "^8.5.2",
+    "@capacitor/core": "^8.5.2",
+    "@google/generative-ai": "^0.21.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2"
+  }
+}

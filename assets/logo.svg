@@ -1,0 +1,113 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
+  <defs>
+    <!-- Degradado Naranja Vibrante y Elegante (#F97316 a tono más cálido) -->
+    <linearGradient id="orangeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FB923C"/>
+      <stop offset="50%" stop-color="#F97316"/>
+      <stop offset="100%" stop-color="#EA580C"/>
+    </linearGradient>
+
+    <!-- Sombra suave para dar profundidad en Android -->
+    <filter id="navyShadow" x="-15%" y="-15%" width="130%" height="130%">
+      <feDropShadow dx="0" dy="10" stdDeviation="14" flood-color="#0f0f1c" flood-opacity="0.3"/>
+    </filter>
+  </defs>
+
+  <!-- 1. Fondo Icono Android Squircle / Play Store con Orange #F97316 -->
+  <rect width="512" height="512" rx="112" fill="url(#orangeGrad)"/>
+
+  <!-- 2. Grupo del Diseño en Navy #1A1A2E -->
+  <g filter="url(#navyShadow)" fill="#1A1A2E" stroke="#1A1A2E" stroke-linecap="round" stroke-linejoin="round">
+    
+    <!-- TURBO CENTRAL -->
+    <!-- Carcasa exterior e inlet/outlet del turbo -->
+    <path d="M 230 148 
+             L 300 148 
+             A 6 6 0 0 1 306 154 
+             L 306 195 
+             A 6 6 0 0 1 300 201 
+             L 282 201 
+             C 328 220 348 260 340 305 
+             C 330 355 285 390 230 390 
+             L 140 390 
+             A 6 6 0 0 1 134 384 
+             L 134 340 
+             A 6 6 0 0 1 140 334 
+             L 155 334 
+             C 142 315 138 290 146 265 
+             C 160 215 200 170 248 168 
+             L 230 148 Z" 
+          fill="#1A1A2E"/>
+
+    <!-- Bocas de las tuberías (Flanges / Bordes del turbo) -->
+    <rect x="296" y="142" width="16" height="66" rx="6" fill="#1A1A2E"/>
+    <rect x="124" y="330" width="16" height="66" rx="6" fill="#1A1A2E"/>
+
+    <!-- Calado interior del espiral (para revelar el naranja y dar contraste) -->
+    <path d="M 235 204 
+             C 278 204 312 238 312 280 
+             C 312 322 278 356 235 356 
+             C 192 356 158 322 158 280 
+             C 158 238 192 204 235 204 Z" 
+          fill="#F97316"/>
+
+    <!-- Núcleo interno del turbo (Cámara de aspas en Navy) -->
+    <circle cx="235" cy="280" r="62" fill="#1A1A2E"/>
+
+    <!-- Centro de la turbina (Eje) -->
+    <circle cx="235" cy="280" r="13" fill="#F97316"/>
+
+    <!-- Aspas / Hélices curvadas de la turbina revelando el fondo naranja -->
+    <path d="M 235 240 Q 248 260 235 280" stroke="#F97316" stroke-width="6" fill="none"/>
+    <path d="M 275 280 Q 255 293 235 280" stroke="#F97316" stroke-width="6" fill="none"/>
+    <path d="M 235 320 Q 222 300 235 280" stroke="#F97316" stroke-width="6" fill="none"/>
+    <path d="M 195 280 Q 215 267 235 280" stroke="#F97316" stroke-width="6" fill="none"/>
+    <path d="M 263 252 Q 250 270 235 280" stroke="#F97316" stroke-width="6" fill="none"/>
+    <path d="M 263 308 Q 245 295 235 280" stroke="#F97316" stroke-width="6" fill="none"/>
+    <path d="M 207 308 Q 220 290 235 280" stroke="#F97316" stroke-width="6" fill="none"/>
+    <path d="M 207 252 Q 225 265 235 280" stroke="#F97316" stroke-width="6" fill="none"/>
+
+    <!-- 3. AUTO DEPORTIVO (Lado Derecho emergiendo del turbo) -->
+    <path d="M 295 268 
+             C 325 260 360 268 392 284
+             C 416 296 432 308 440 326
+             L 435 344
+             C 430 354 420 358 406 358
+             C 400 334 380 316 355 316
+             C 330 316 310 334 304 358
+             L 282 358
+             C 285 330 290 295 295 268 Z" 
+          fill="#1A1A2E"/>
+
+    <!-- Alerón GT deportivo del auto -->
+    <path d="M 416 295 L 442 290 L 440 298 L 420 303 Z" fill="#1A1A2E"/>
+    <line x1="424" y1="302" x2="424" y2="315" stroke="#1A1A2E" stroke-width="5"/>
+    <line x1="436" y1="298" x2="436" y2="315" stroke="#1A1A2E" stroke-width="5"/>
+
+    <!-- Ventana del auto en relieve sutil -->
+    <path d="M 325 273 Q 360 277 384 290 L 350 290 Z" fill="#F97316" opacity="0.9"/>
+
+    <!-- Hueco del paso de rueda trasero del auto -->
+    <circle cx="355" cy="358" r="28" fill="#F97316"/>
+
+    <!-- 4. MOTO SUPERBIKE (Lado Izquierdo integrada aerodinámicamente) -->
+    <path d="M 175 270 
+             C 148 262 118 270 92 286
+             C 74 298 62 312 55 330
+             L 60 348
+             C 66 356 76 358 88 358
+             C 94 334 114 316 139 316
+             C 152 316 164 322 172 332
+             C 174 310 175 288 175 270 Z" 
+          fill="#1A1A2E"/>
+
+    <!-- Manillar y cúpula de carrera de la moto -->
+    <path d="M 108 274 L 92 260 L 80 264" fill="none" stroke="#1A1A2E" stroke-width="6"/>
+    <!-- Cúpula de la moto -->
+    <path d="M 125 276 Q 102 284 94 296 L 118 296 Z" fill="#F97316" opacity="0.9"/>
+
+    <!-- Hueco de rueda delantera de la moto -->
+    <circle cx="139" cy="358" r="28" fill="#F97316"/>
+
+  </g>
+</svg>

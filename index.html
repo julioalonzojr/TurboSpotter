@@ -1,0 +1,1535 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TurboSpotter - Colecciona autos y motos</title>
+  <link rel="icon" type="image/jpeg" href="assets/logo.jpg">
+  <!-- Enlazamos nuestro diseño CSS -->
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+  <!-- PANTALLA INTRO / SPLASH ANIMADO (Primera entrada) -->
+  <div id="app-splash-screen" class="splash-screen-overlay" aria-hidden="false">
+    <div class="splash-content">
+      <div class="splash-logo-circle">
+        <img src="assets/logo.jpg" alt="TurboSpotter Logo" class="splash-logo-img">
+        <div class="splash-pulse-ring"></div>
+      </div>
+      <h1 class="splash-title">TURBO<span class="splash-title-highlight">SPOTTER</span></h1>
+      <p class="splash-subtitle">Caza • Colecciona • Compite</p>
+      <div class="splash-loader-bar">
+        <div class="splash-loader-progress"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PANTALLA DE ACCESO / AUTENTICACIÓN (LOGIN & REGISTRO) -->
+  <div id="app-auth-screen" class="auth-screen-overlay" style="display: none;" aria-hidden="true">
+    <div class="auth-card-wrapper">
+      <!-- Encabezado de la app -->
+      <div class="auth-brand-header">
+        <div class="auth-brand-logo">
+          <img src="assets/logo.jpg" alt="TurboSpotter" class="auth-logo-img">
+        </div>
+        <h2 class="auth-brand-name">TURBO<span class="auth-brand-highlight">SPOTTER</span></h2>
+        <p class="auth-brand-tagline" id="auth-header-tagline">Comienza tu viaje como cazador de superautos y motos</p>
+      </div>
+
+      <!-- Segmento de pestañas: Iniciar Sesión vs Crear Cuenta -->
+      <div class="auth-tabs-segmented">
+        <button class="auth-tab-btn active" id="auth-tab-register" type="button">Crear Cuenta</button>
+        <button class="auth-tab-btn" id="auth-tab-login" type="button">Iniciar Sesión</button>
+      </div>
+
+      <!-- FORMULARIO: REGISTRO (Nueva cuenta) -->
+      <form id="form-auth-register" class="auth-form-body active">
+        <div class="auth-field-group">
+          <label for="reg-email" class="auth-label">Correo Electrónico</label>
+          <div class="auth-input-box">
+            <span class="auth-input-icon">✉️</span>
+            <input type="email" id="reg-email" class="auth-input" placeholder="ejemplo@correo.com" required autocomplete="email" />
+          </div>
+        </div>
+
+        <div class="auth-field-group">
+          <label for="reg-password" class="auth-label">Contraseña</label>
+          <div class="auth-input-box">
+            <span class="auth-input-icon">🔒</span>
+            <input type="password" id="reg-password" class="auth-input" placeholder="Mínimo 6 caracteres" required autocomplete="new-password" />
+            <button type="button" class="auth-btn-toggle-pwd" data-target="reg-password" aria-label="Mostrar contraseña">👁️</button>
+          </div>
+        </div>
+
+        <div class="auth-field-group">
+          <label for="reg-password-confirm" class="auth-label">Confirmar Contraseña</label>
+          <div class="auth-input-box">
+            <span class="auth-input-icon">🛡️</span>
+            <input type="password" id="reg-password-confirm" class="auth-input" placeholder="Repite tu contraseña" required autocomplete="new-password" />
+            <button type="button" class="auth-btn-toggle-pwd" data-target="reg-password-confirm" aria-label="Mostrar contraseña">👁️</button>
+          </div>
+        </div>
+
+        <div id="auth-register-error" class="auth-error-msg" style="display: none;"></div>
+
+        <button type="submit" class="btn-auth-submit" id="btn-submit-register">
+          <span>CREAR CUENTA & ENTRAR</span>
+          <span class="btn-auth-arrow">🚀</span>
+        </button>
+
+        <p class="auth-terms-note">
+          Al continuar, aceptas coleccionar autos y competir con la comunidad.
+        </p>
+      </form>
+
+      <!-- FORMULARIO: LOGIN (Ya tengo cuenta) -->
+      <form id="form-auth-login" class="auth-form-body" style="display: none;">
+        <div class="auth-field-group">
+          <label for="login-email" class="auth-label">Correo Electrónico</label>
+          <div class="auth-input-box">
+            <span class="auth-input-icon">✉️</span>
+            <input type="email" id="login-email" class="auth-input" placeholder="tu@correo.com" required autocomplete="email" />
+          </div>
+        </div>
+
+        <div class="auth-field-group">
+          <label for="login-password" class="auth-label">Contraseña</label>
+          <div class="auth-input-box">
+            <span class="auth-input-icon">🔒</span>
+            <input type="password" id="login-password" class="auth-input" placeholder="Tu contraseña" required autocomplete="current-password" />
+            <button type="button" class="auth-btn-toggle-pwd" data-target="login-password" aria-label="Mostrar contraseña">👁️</button>
+          </div>
+        </div>
+
+        <div id="auth-login-error" class="auth-error-msg" style="display: none;"></div>
+
+        <button type="submit" class="btn-auth-submit" id="btn-submit-login">
+          <span>INICIAR SESIÓN</span>
+          <span class="btn-auth-arrow">⚡</span>
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Barra Superior de Estado y Perfil (HUD Gamer) -->
+  <header class="app-header">
+    <div class="user-status-bar">
+      <!-- 1. Perfil con Nivel y Barra de XP conectada (Toca para editar foto, nombre y bio) -->
+      <div class="profile-level-badge" id="btn-header-profile" title="Toca para ir a tu perfil y panel de control"
+        style="cursor: pointer;">
+        <div class="avatar-ring">
+          <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80"
+            alt="Foto de perfil" class="avatar-img" id="user-avatar">
+        </div>
+        <div class="level-info">
+          <div class="level-text">Lv.<span id="user-level">83</span></div>
+          <div class="xp-progress-bar" title="Progreso de nivel">
+            <div class="xp-fill" id="xp-bar" style="width: 72%;"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. Nitrio ganado por spottings -->
+      <div class="currency-badge" title="Nitrio acumulado">
+        <div class="gem-icon-wrapper">
+          <span class="gem-icon">💎</span>
+          <span class="gem-sparkle">+</span>
+        </div>
+        <span class="currency-count" id="user-coins">741</span>
+      </div>
+
+      <!-- 3. Rango Actual del Piloto en la Barra Superior -->
+      <div class="header-rank-badge" id="header-rank-badge" title="Toca para ver tu rango y medalla">
+        <span class="header-rank-icon" id="header-rank-icon">💠</span>
+        <span class="header-rank-text" id="header-rank-text">Platino</span>
+      </div>
+    </div>
+
+    <!-- 4. Botón de Ajustes (Engranaje separado a la derecha) -->
+    <div class="header-actions-right">
+      <button class="btn-header-gear" id="btn-header-settings" aria-label="Ajustes de la aplicación"
+        title="Ajustes y configuración">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"
+          stroke-linejoin="round">
+          <circle cx="12" cy="12" r="3"></circle>
+          <path
+            d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z">
+          </path>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- CONTENEDOR DE VISTAS DE LA APP -->
+  <div class="app-content-container">
+
+    <!-- 1. VISTA: GARAJE UNIFICADO (AUTOS & MOTOS) -->
+    <section id="view-garage" class="app-view active">
+
+      <!-- Switch Toggle Segmentado: Autos vs Motos -->
+      <div class="garage-switch-container">
+        <div class="segmented-control" role="tablist" aria-label="Cambiar entre Autos y Motos">
+          <button class="seg-btn active" id="seg-btn-cars" data-mode="cars" role="tab" aria-selected="true">
+            <span class="seg-label"><span id="txt-seg-cars" data-i18n="garageCars">Autos</span> (<span
+                id="count-cars-badge">0</span>)</span>
+          </button>
+          <button class="seg-btn" id="seg-btn-motos" data-mode="motos" role="tab" aria-selected="false">
+            <span class="seg-label"><span id="txt-seg-motos" data-i18n="garageMotos">Motos</span> (<span
+                id="count-motos-badge">0</span>)</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Toolbar de Filtros por Rareza y Modo Mis Carros / Mis Motos -->
+      <div class="garage-toolbar">
+        <div class="garage-view-modes">
+          <button class="btn-garage-view-mode active" id="btn-garage-all" title="Ver todos los vehículos en cuadrícula">
+            Todos
+          </button>
+          <button class="btn-garage-view-mode" id="btn-garage-by-brands" title="Ver vehículos agrupados y ordenados por marca">
+            <span id="txt-btn-garage-brands">Mis Carros</span>
+          </button>
+        </div>
+
+        <div class="filters-group" id="garage-rarity-filters" role="tablist" aria-label="Filtrar por rareza">
+          <button class="filter-chip active" data-filter="all" data-i18n="filterAll">Todos</button>
+          <button class="filter-chip" data-filter="comun" data-i18n="filterCommon">Común</button>
+          <button class="filter-chip" data-filter="raro" data-i18n="filterRare">Raro</button>
+          <button class="filter-chip" data-filter="epico" data-i18n="filterEpic">Épico</button>
+          <button class="filter-chip" data-filter="legendario" data-i18n="filterLegendary">Legendario</button>
+        </div>
+      </div>
+
+      <!-- Cuadrícula Única Dinámica de Vehículos -->
+      <div id="garage-unified-grid" class="garage-grid" aria-live="polite"></div>
+    </section>
+
+    <!-- 2. VISTA: FEED COMUNITARIO -->
+    <section id="view-feed" class="app-view">
+      <div id="feed-grid" class="feed-grid"></div>
+    </section>
+
+    <!-- 3. VISTA: AMIGOS / COMUNIDAD -->
+    <section id="view-friends" class="app-view">
+      <!-- Switch Segmentado: Amigos vs Solicitudes -->
+      <div class="ranking-switch-container friends-switch-container">
+        <div class="ranking-segmented-control" role="tablist" aria-label="Cambiar vista de amigos o solicitudes">
+          <button class="ranking-seg-btn active" id="friends-tab-myfriends" data-friends-tab="amigos" role="tab"
+            aria-selected="true">
+            <span class="r-seg-icon">👥</span>
+            <span class="r-seg-label" data-i18n="friendsMyFriends">Mis Amigos</span>
+            <span class="friends-tab-badge" id="badge-my-friends-count">3</span>
+          </button>
+          <button class="ranking-seg-btn" id="friends-tab-requests" data-friends-tab="solicitudes" role="tab"
+            aria-selected="false">
+            <span class="r-seg-icon">📩</span>
+            <span class="r-seg-label" data-i18n="friendsRequests">Solicitudes</span>
+            <span class="friends-tab-badge badge-pending" id="badge-requests-count">2</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Buscador de Amigos / Agregar -->
+      <div class="friends-search-bar" id="friends-search-bar">
+        <input type="text" id="friends-search-input" placeholder="Buscar amigos por @usuario o nombre..."
+          class="friends-input" />
+        <button class="btn-add-friend" id="btn-add-friend" data-i18n="friendsAddBtn">+ Añadir</button>
+      </div>
+
+      <!-- Panel: Mis Amigos -->
+      <div id="friends-panel-myfriends" class="friends-subpanel active">
+        <div class="friends-list" id="friends-list"></div>
+      </div>
+
+      <!-- Panel: Solicitudes de Amistad -->
+      <div id="friends-panel-requests" class="friends-subpanel" style="display: none;">
+        <div class="requests-list" id="requests-list"></div>
+      </div>
+    </section>
+
+    <!-- 4. VISTA: RANKING / LEADERBOARD -->
+    <section id="view-ranking" class="app-view">
+      <!-- Switch Toggle Segmentado: Amigos vs Global vs Regional -->
+      <div class="ranking-switch-container">
+        <div class="ranking-segmented-control" role="tablist" aria-label="Cambiar modo de ranking">
+          <button class="ranking-seg-btn active" id="rank-tab-amigos" data-rank-mode="amigos" role="tab"
+            aria-selected="true">
+            <span class="r-seg-icon">👥</span>
+            <span class="r-seg-label" data-i18n="rankFriends">Amigos</span>
+          </button>
+          <button class="ranking-seg-btn" id="rank-tab-global" data-rank-mode="global" role="tab" aria-selected="false">
+            <span class="r-seg-icon">🌍</span>
+            <span class="r-seg-label" data-i18n="rankGlobal">Global</span>
+          </button>
+          <button class="ranking-seg-btn" id="rank-tab-regional" data-rank-mode="regional" role="tab"
+            aria-selected="false">
+            <span class="r-seg-icon">📍</span>
+            <span class="r-seg-label" data-i18n="rankRegional">Regional</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="ranking-podium" id="ranking-podium"></div>
+      <div class="ranking-table" id="ranking-list"></div>
+    </section>
+
+    <!-- 5. VISTA: PERFIL Y MENÚ PRINCIPAL -->
+    <section id="view-profile" class="app-view">
+
+      <!-- Tarjeta Principal del Piloto / Spotter con Sistema de Rangos -->
+      <div class="profile-hero-card">
+        <div class="profile-avatar-large" id="btn-profile-card-avatar" title="Toca para cambiar foto de perfil"
+          style="cursor: pointer;">
+          <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=250&q=80"
+            alt="Foto de perfil" class="profile-img-lg" id="profile-user-avatar" />
+          <span class="pro-crown-badge" id="profile-rank-crown">💠</span>
+
+        </div>
+        <div class="profile-identity">
+          <div class="profile-title-row">
+            <h2 class="profile-name" id="profile-user-name">Julio Alonzo</h2>
+            <span class="rank-tier-pill tier-platino" id="user-tier-pill">💠 Platino</span>
+          </div>
+          <span class="profile-handle" id="user-rank-title">@juliospotter • Cazador Élite</span>
+          <p class="profile-bio-text" id="profile-user-bio">Amante del automovilismo deportivo, cazando superautos y
+            motos exóticas en la ciudad. 🏁🏎️</p>
+
+          <button class="btn-edit-profile-trigger" id="btn-open-edit-profile" data-i18n="btnEditProfile">
+            ✏️ Editar Perfil
+          </button>
+
+          <div class="profile-tags">
+            <span class="p-tag-level" id="btn-test-level-up" title="Toca para probar la animación de Subir de Nivel" style="cursor: pointer;"><span data-i18n="tagLevel">Nivel</span> <strong
+                id="profile-level-val">83</strong> ⚡</span>
+            <span class="p-tag-rank">Top #2 Amigos • #6 Global</span>
+            <span class="p-tag-cars" id="profile-cars-total">18 autos cazados</span>
+          </div>
+
+          <!-- Barra de Progreso hacia el Siguiente Rango -->
+          <div class="rank-next-progress-box" id="rank-progress-box">
+            <div class="rank-progress-label">
+              <span>Siguiente Rango: <strong id="next-rank-name">💎 Diamante</strong></span>
+              <span id="rank-progress-percent">68%</span>
+            </div>
+            <div class="rank-progress-track">
+              <div class="rank-progress-fill" id="rank-progress-fill" style="width: 68%;"></div>
+            </div>
+            <div class="rank-requirements-hint" id="rank-req-hint">
+              Faltan 7 niveles y 32 autos para Diamante
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Menú Estilo Iconos Gamificados (Grid como la referencia) -->
+      <div class="profile-app-grid">
+
+        <!-- 1. PRO (Corona Dorada) -->
+        <button class="app-icon-item" data-action="open-pro">
+          <div class="app-icon-symbol icon-pro-badge">
+            <span class="emoji-icon">👑</span>
+          </div>
+          <span class="app-icon-label" data-i18n="menuPro">Pro</span>
+        </button>
+
+        <!-- 2. TIENDA (Casita / Tienda) -->
+        <button class="app-icon-item" data-action="open-shop">
+          <div class="app-icon-symbol icon-shop-badge">
+            <span class="emoji-icon">🏪</span>
+          </div>
+          <span class="app-icon-label" data-i18n="menuShop">Tienda</span>
+        </button>
+
+        <!-- 3. GARAJE -->
+        <button class="app-icon-item" data-action="go-garage">
+          <div class="app-icon-symbol icon-garage-badge">
+            <span class="emoji-icon">🚗</span>
+          </div>
+          <span class="app-icon-label" data-i18n="menuGarage">Garaje</span>
+        </button>
+
+        <!-- 4. INVENTARIO (Cosméticos, Bordes, Temas) -->
+        <button class="app-icon-item" data-action="open-inventory">
+          <div class="app-icon-symbol icon-inventory-badge">
+            <span class="emoji-icon">🎒</span>
+          </div>
+          <span class="app-icon-label" data-i18n="menuInventory">Inventario</span>
+        </button>
+
+        <!-- 5. MISIONES (Estandarte) -->
+        <button class="app-icon-item" data-action="open-missions">
+          <div class="app-icon-symbol icon-missions-badge">
+            <span class="emoji-icon">🚩</span>
+            <span class="badge-dot-alert"></span>
+          </div>
+          <span class="app-icon-label" data-i18n="menuMissions">Misiones</span>
+        </button>
+
+        <!-- 6. RANGOS / ESCALAFÓN -->
+        <button class="app-icon-item" data-action="open-medals">
+          <div class="app-icon-symbol icon-medals-badge">
+            <span class="emoji-icon">🏆</span>
+          </div>
+          <span class="app-icon-label" data-i18n="menuRanks">Rangos</span>
+        </button>
+
+      </div>
+    </section>
+
+  </div>
+
+  <!-- MODAL: TIENDA DE ARTÍCULOS / CUSTOM GARAGE -->
+  <dialog id="modal-shop" class="sub-modal carspotter-shop-modal">
+    <div class="sub-modal-card carspotter-shop-card">
+
+      <!-- Encabezado Tienda TurboSpotter -->
+      <div class="shop-custom-header">
+        <div class="shop-header-left">
+          <div class="shop-title-wrap">
+            <span class="shop-kicker">TIENDA EXCLUSIVA</span>
+            <h2 class="shop-main-title">Custom Garage</h2>
+          </div>
+        </div>
+
+        <div class="shop-header-right">
+          <div class="shop-balance-pill" title="Tu Nitrio disponible">
+            <span class="shop-gem-glow">💎</span>
+            <span class="shop-balance-val" id="shop-user-gems-val">741</span>
+          </div>
+          <button class="btn-close-submodal" data-close="modal-shop" aria-label="Cerrar tienda">&times;</button>
+        </div>
+      </div>
+
+      <!-- Contenedor Scrollable de la Tienda -->
+      <div class="shop-custom-body">
+
+        <!-- 1. SECCIÓN: BORDES DE PERFIL -->
+        <div class="shop-section">
+          <div class="shop-section-header">
+            <div class="sec-title-group">
+              <h3>Bordes de Avatar</h3>
+              <p>Personaliza tu foto de piloto en el garaje y rankings</p>
+            </div>
+            <span class="shop-section-badge">Marcos</span>
+          </div>
+          <div class="shop-borders-grid" id="shop-borders-container">
+            <!-- Inyectado dinámicamente con estética CarSpotter -->
+          </div>
+        </div>
+
+        <!-- 2. SECCIÓN: TEMAS PRISMÁTICOS -->
+        <div class="shop-section">
+          <div class="shop-section-header">
+            <div class="sec-title-group">
+              <h3>Temas Prismáticos</h3>
+              <p>Efectos de color dinámicos con gradientes duales</p>
+            </div>
+            <div class="shop-price-tag">
+              <span>💎 500</span>
+            </div>
+          </div>
+          <div class="shop-themes-grid" id="shop-prismatic-themes-container">
+            <!-- Inyectado dinámicamente -->
+          </div>
+        </div>
+
+        <!-- 3. SECCIÓN: TEMAS DE COLOR -->
+        <div class="shop-section">
+          <div class="shop-section-header">
+            <div class="sec-title-group">
+              <h3>Temas de Color</h3>
+              <p>Paletas tonales elegantes para toda la interfaz</p>
+            </div>
+            <div class="shop-price-tag">
+              <span>💎 125</span>
+            </div>
+          </div>
+          <div class="shop-themes-grid" id="shop-solid-themes-container">
+            <!-- Inyectado dinámicamente -->
+          </div>
+        </div>
+
+        <!-- 4. SECCIÓN: RECARGA DE GEMAS -->
+        <div class="shop-section" style="margin-top: 6px;">
+          <div class="shop-section-header">
+            <div class="sec-title-group">
+              <h3>Paquetes de Nitrio</h3>
+              <p>Adquiere Nitrio para desbloquear mejoras cosméticas</p>
+            </div>
+            <span class="shop-section-badge">Nitrio</span>
+          </div>
+          <div class="shop-gems-grid">
+            <!-- 1. 100 Nitrio -->
+            <div class="shop-gem-card">
+              <div class="gem-pack-badge-amount"><span>💎 100</span></div>
+              <div class="gem-pack-img-wrap">
+                <img src="assets/gems/gem_100.jpg" alt="100 Nitrio" class="gem-pack-custom-img" />
+              </div>
+              <div class="gem-pack-info">
+                <strong>100 Nitrio</strong>
+                <small>Puñado Inicial</small>
+              </div>
+              <button class="btn-buy-shop shop-gem-btn" data-gems="100">$0.99</button>
+            </div>
+
+            <!-- 2. 500 Nitrio -->
+            <div class="shop-gem-card">
+              <div class="gem-pack-badge-amount"><span>💎 500</span></div>
+              <div class="gem-pack-img-wrap">
+                <img src="assets/gems/gem_500.jpg" alt="500 Nitrio" class="gem-pack-custom-img" />
+              </div>
+              <div class="gem-pack-info">
+                <strong>500 Nitrio</strong>
+                <small>Bolsa de Spotter</small>
+              </div>
+              <button class="btn-buy-shop shop-gem-btn" data-gems="500">$4.98</button>
+            </div>
+
+            <!-- 3. 1,200 Nitrio -->
+            <div class="shop-gem-card">
+              <div class="gem-pack-badge-amount"><span>💎 1,200</span></div>
+              <div class="gem-pack-img-wrap">
+                <img src="assets/gems/gem_1200.jpg" alt="1,200 Nitrio" class="gem-pack-custom-img" />
+              </div>
+              <div class="gem-pack-info">
+                <strong>1,200 Nitrio</strong>
+                <small>Bandeja Piloto</small>
+              </div>
+              <button class="btn-buy-shop shop-gem-btn" data-gems="1200">$9.62</button>
+            </div>
+
+            <!-- 4. 2,500 Nitrio (MÁS POPULAR) -->
+            <div class="shop-gem-card featured">
+              <span class="gem-pack-badge">MÁS POPULAR</span>
+              <div class="gem-pack-badge-amount"><span>💎 2,500</span></div>
+              <div class="gem-pack-img-wrap">
+                <img src="assets/gems/gem_2500.jpg" alt="2,500 Nitrio" class="gem-pack-custom-img" />
+              </div>
+              <div class="gem-pack-info">
+                <strong>2,500 Nitrio</strong>
+                <small>Cesta de Paddock</small>
+              </div>
+              <button class="btn-buy-shop shop-gem-btn" data-gems="2500">$19.25</button>
+            </div>
+
+            <!-- 5. 6,500 Nitrio -->
+            <div class="shop-gem-card">
+              <div class="gem-pack-badge-amount"><span>💎 6,500</span></div>
+              <div class="gem-pack-img-wrap">
+                <img src="assets/gems/gem_6500.jpg" alt="6,500 Nitrio" class="gem-pack-custom-img" />
+              </div>
+              <div class="gem-pack-info">
+                <strong>6,500 Nitrio</strong>
+                <small>Puesto de Garaje</small>
+              </div>
+              <button class="btn-buy-shop shop-gem-btn" data-gems="6500">$48.49</button>
+            </div>
+
+            <!-- 6. 14,000 Nitrio (MEJOR VALOR) -->
+            <div class="shop-gem-card value-pack">
+              <span class="gem-pack-badge badge-best-value">MEJOR VALOR</span>
+              <div class="gem-pack-badge-amount"><span>💎 14,000</span></div>
+              <div class="gem-pack-img-wrap">
+                <img src="assets/gems/gem_14000.jpg" alt="14,000 Nitrio" class="gem-pack-custom-img" />
+              </div>
+              <div class="gem-pack-info">
+                <strong>14,000 Nitrio</strong>
+                <small>Contenedor Hypercar</small>
+              </div>
+              <button class="btn-buy-shop shop-gem-btn" data-gems="14000">$96.98</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </dialog>
+
+  <!-- MODAL: CONFIRMACIÓN DE COMPRA DE ARTÍCULO / TEMA -->
+  <dialog id="modal-confirm-purchase" class="sub-modal shop-confirm-modal">
+    <div class="sub-modal-card shop-confirm-card">
+      <div class="confirm-icon-glow" id="confirm-item-icon-wrapper">
+        <span id="confirm-item-icon">💎</span>
+      </div>
+      <div class="confirm-content">
+        <span class="confirm-kicker">CONFIRMAR COMPRA</span>
+        <h3 id="confirm-item-title">¿Deseas desbloquear este artículo?</h3>
+        <p id="confirm-item-desc">Se descontará el Nitrio de tu balance y se equipará de inmediato en tu perfil.</p>
+
+        <div class="confirm-price-pill">
+          <span class="pill-label">Costo:</span>
+          <span class="pill-val" id="confirm-item-price">500 💎</span>
+        </div>
+      </div>
+
+      <div class="confirm-modal-actions">
+        <button class="btn-cancel-confirm" id="btn-cancel-purchase">Cancelar</button>
+        <button class="btn-proceed-confirm" id="btn-proceed-purchase">Confirmar y Desbloquear</button>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- MODAL: INVENTARIO PERSONAL DE SPOTTER -->
+  <dialog id="modal-inventory" class="sub-modal inventory-modal">
+    <div class="sub-modal-card inventory-card">
+
+      <!-- Cabecera de Inventario -->
+      <div class="inventory-header">
+        <div class="inv-title-wrap">
+          <span class="inv-kicker">MOCHILA DEL PILOTO</span>
+          <h2 class="inv-main-title">Mi Inventario</h2>
+        </div>
+        <div class="inv-header-right">
+          <div class="inv-stats-pill" title="Artículos desbloqueados">
+            <span class="inv-stats-icon">📦</span>
+            <span class="inv-stats-val" id="inv-total-unlocked">0/15</span>
+          </div>
+          <button class="btn-close-submodal" data-close="modal-inventory"
+            aria-label="Cerrar inventario">&times;</button>
+        </div>
+      </div>
+
+      <!-- Pestañas de Clasificación (Tabs) -->
+      <div class="inventory-tabs-bar">
+        <button class="inv-tab-btn active" data-inv-tab="all">
+          <span>🎒 Todos</span>
+        </button>
+        <button class="inv-tab-btn" data-inv-tab="borders">
+          <span>🖼️ Bordes</span>
+        </button>
+        <button class="inv-tab-btn" data-inv-tab="themes">
+          <span>🎨 Temas</span>
+        </button>
+      </div>
+
+      <!-- Cuerpo del Inventario con Grids Clasificados -->
+      <div class="inventory-body">
+
+        <!-- Categoría: Bordes de Avatar -->
+        <div class="inv-category-section" id="inv-sec-borders">
+          <div class="inv-category-title">
+            <h4>Bordes de Avatar</h4>
+            <span class="inv-cat-count" id="inv-count-borders">0</span>
+          </div>
+          <div class="inv-items-grid" id="inv-grid-borders">
+            <!-- Inyectado dinámicamente con bordes desbloqueados -->
+          </div>
+        </div>
+
+        <!-- Categoría: Temas Visuales -->
+        <div class="inv-category-section" id="inv-sec-themes">
+          <div class="inv-category-title">
+            <h4>Temas de Interfaz</h4>
+            <span class="inv-cat-count" id="inv-count-themes">0</span>
+          </div>
+          <div class="inv-items-grid" id="inv-grid-themes">
+            <!-- Inyectado dinámicamente con temas desbloqueados -->
+          </div>
+        </div>
+
+        <!-- Estado Vacío (si no tiene items adquiridos) -->
+        <div class="inv-empty-state" id="inv-empty-state" style="display: none;">
+          <div class="inv-empty-icon">🎒✨</div>
+          <h3>Tu inventario está listo para llenarse</h3>
+          <p>Visita la tienda para desbloquear marcos exclusivos y temas cósmicos con tu Nitrio.</p>
+          <button class="inv-go-shop-btn" id="inv-btn-to-shop">Ir a la Tienda</button>
+        </div>
+
+      </div>
+    </div>
+  </dialog>
+
+
+
+  <!-- MODAL: BUSCAR Y AÑADIR NUEVOS AMIGOS -->
+  <dialog id="modal-add-friend" class="sub-modal add-friend-modal">
+    <div class="sub-modal-card add-friend-card">
+      <div class="sub-modal-header">
+        <div class="sub-header-title">
+          <span class="sub-header-icon">👥</span>
+          <h3>Añadir Nuevo Amigo</h3>
+        </div>
+        <button class="btn-close-submodal" data-close="modal-add-friend" aria-label="Cerrar">&times;</button>
+      </div>
+
+      <p class="sub-modal-desc">Escribe el @usuario de un amigo spotter o explora los cazadores recomendados.</p>
+
+      <div class="add-friend-search-wrap">
+        <div class="edit-input-prefix-wrapper">
+          <span class="edit-input-prefix">@</span>
+          <input type="text" id="input-search-new-friend" class="edit-text-input has-prefix"
+            placeholder="Escribe un usuario (ej: marcos_gt, lucas...)" />
+        </div>
+      </div>
+
+      <!-- Sección de Spotters Recomendados / Sugeridos -->
+      <div class="suggested-spotters-section">
+        <span class="suggested-title-label">Spotters Destacados en tu Zona</span>
+        <div class="suggested-spotters-list" id="suggested-spotters-list">
+          <!-- Inyectado dinámicamente -->
+        </div>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- MODAL: COMENTARIOS DEL FEED -->
+  <dialog id="modal-comments" class="sub-modal comments-modal">
+    <div class="sub-modal-card comments-modal-card">
+      <div class="sub-modal-header">
+        <div class="sub-header-title">
+          <span class="sub-header-icon">💬</span>
+          <h3 id="comments-modal-title">Comentarios del Spot</h3>
+        </div>
+        <button class="btn-close-submodal" data-close="modal-comments" aria-label="Cerrar">&times;</button>
+      </div>
+
+      <div class="spot-comment-summary" id="spot-comment-summary">
+        <!-- Resumen del auto comentado -->
+      </div>
+
+      <div class="comments-list" id="comments-list-container">
+        <!-- Lista de comentarios inyectada dinámicamente -->
+      </div>
+
+      <div class="comment-input-bar">
+        <input type="text" id="input-new-comment" class="comment-text-input" placeholder="Escribe un comentario..."
+          maxlength="120" />
+        <button class="btn-send-comment" id="btn-send-comment">Enviar</button>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- MODAL: MISIONES Y DESAFÍOS -->
+  <dialog id="modal-missions" class="sub-modal">
+    <div class="sub-modal-card">
+      <div class="sub-modal-header">
+        <div class="sub-header-title">
+          <span class="sub-header-icon">🎯</span>
+          <h3>Misiones de Caza</h3>
+        </div>
+        <button class="btn-close-submodal" data-close="modal-missions">&times;</button>
+      </div>
+      <div class="sub-modal-body">
+        <div class="missions-header-summary">
+          <div class="missions-stat-pill">
+            <span>Completadas:</span>
+            <strong id="missions-completed-count">0/5</strong>
+          </div>
+          <div class="missions-stat-pill gems-pill">
+            <span>Disponibles para reclamar:</span>
+            <strong id="missions-claimable-badge">0 💎</strong>
+          </div>
+        </div>
+        <div class="missions-list" id="missions-list-container">
+          <!-- Inyectado dinámicamente -->
+        </div>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- MODAL: SUSCRIPCIÓN SPOTTER PRO -->
+  <dialog id="modal-pro" class="sub-modal">
+    <div class="sub-modal-card pro-card-modal">
+      <div class="sub-modal-header">
+        <div class="sub-header-title">
+          <span class="sub-header-icon">👑</span>
+          <h3>TurboSpotter PRO</h3>
+        </div>
+        <button class="btn-close-submodal" data-close="modal-pro">&times;</button>
+      </div>
+      <div class="sub-modal-body">
+        <div class="pro-features-list">
+          <div class="pro-feature-row">
+            <span class="feat-check">✓</span>
+            <div><strong>Spottings y Capturas Ilimitadas</strong>: Los usuarios gratuitos tienen 1 spot al día; los usuarios PRO pueden cazar sin límites.</div>
+          </div>
+          <div class="pro-feature-row">
+            <span class="feat-check">✓</span>
+            <div><strong>Insignia Dorada VIP</strong>: Destaca con corona dorada y rango exclusivo en tu perfil y en el Ranking mundial.</div>
+          </div>
+          <div class="pro-feature-row">
+            <span class="feat-check">✓</span>
+            <div><strong>Bono Inicial de Nitrio</strong>: Recibe +5,000 Nitrio 💎 de bienvenida para desbloquear marcos y temas.</div>
+          </div>
+        </div>
+
+        <div class="pro-pricing-box">
+          <div class="price-val">$2.99 USD <small>/ mes</small></div>
+          <p>Cancela en cualquier momento desde Google Play</p>
+        </div>
+
+        <button class="btn-confirm-pro" id="btn-subscribe-pro">Desbloquear TurboSpotter PRO</button>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- MODAL: EMBLEMA Y MEDALLA DE RANGO EXCLUSIVA (ESTILO COMPETITIVO) -->
+  <dialog id="modal-ranks" class="sub-modal">
+    <div class="sub-modal-card ranks-modal-card hero-rank-modal">
+      <div class="sub-modal-header borderless-header">
+        <span class="rank-header-pill">TU RANGO ACTUAL</span>
+        <button class="btn-close-submodal" data-close="modal-ranks">&times;</button>
+      </div>
+
+      <div class="sub-modal-body rank-hero-body" id="rank-hero-display">
+        <!-- Renderizado dinámico con la medalla hexagonal, alas y brillo -->
+      </div>
+    </div>
+  </dialog>
+
+  <!-- MODAL: AJUSTES Y CONFIGURACIÓN ESTILO LIFTOFF / MOBILE SETTINGS -->
+  <dialog id="modal-settings" class="sub-modal settings-modal">
+    <div class="sub-modal-card settings-card">
+
+      <!-- Barra Superior de Configuración con Flecha Atrás -->
+      <div class="settings-top-bar">
+        <button class="btn-settings-back btn-close-submodal" data-close="modal-settings" id="btn-close-settings-back"
+          aria-label="Volver">
+          <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" stroke-width="2.5" fill="none"
+            stroke-linecap="round" stroke-linejoin="round">
+            <line x1="19" y1="12" x2="5" y2="12"></line>
+            <polyline points="12 19 5 12 12 5"></polyline>
+          </svg>
+        </button>
+        <h3 class="settings-title" data-i18n="settingsTitle">Configuración</h3>
+        <div style="width: 32px;"></div> <!-- Espaciador para centrado perfecto -->
+      </div>
+
+      <div class="settings-scroll-body">
+
+        <!-- SECCIÓN 1: USUARIO -->
+        <div class="settings-group">
+          <div class="settings-group-header" data-i18n="settingsUser">Usuario</div>
+          <div class="settings-group-list">
+
+            <button class="settings-row-btn" data-action="set-profile">
+              <div class="set-row-left">
+                <span class="set-row-icon">👤</span>
+                <span class="set-row-label" data-i18n="setProfile">Perfil de Spotter</span>
+              </div>
+              <span class="set-row-arrow">›</span>
+            </button>
+
+            <button class="settings-row-btn" data-action="set-account">
+              <div class="set-row-left">
+                <span class="set-row-icon">✳️</span>
+                <span class="set-row-label" data-i18n="setAccount">Cuenta & Seguridad</span>
+              </div>
+              <span class="set-row-arrow">›</span>
+            </button>
+
+            <button class="settings-row-btn" data-action="set-subscription">
+              <div class="set-row-left">
+                <span class="set-row-icon">✨</span>
+                <span class="set-row-label" data-i18n="setPro">Gestionar Suscripción Pro</span>
+              </div>
+              <span class="set-row-arrow">›</span>
+            </button>
+
+            <button class="settings-row-btn" data-action="set-stats">
+              <div class="set-row-left">
+                <span class="set-row-icon">📊</span>
+                <span class="set-row-label" data-i18n="setStats">Estadísticas de Garaje</span>
+              </div>
+              <span class="set-row-arrow">›</span>
+            </button>
+
+            <button class="settings-row-btn" data-action="set-data">
+              <div class="set-row-left">
+                <span class="set-row-icon">🗄️</span>
+                <span class="set-row-label" data-i18n="setStorage">Almacenamiento Local</span>
+              </div>
+              <span class="set-row-arrow">›</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- SECCIÓN 2: PREFERENCIAS -->
+        <div class="settings-group">
+          <div class="settings-group-header" data-i18n="settingsPrefs">Preferencias</div>
+          <div class="settings-group-list">
+
+            <button class="settings-row-btn" data-action="set-units">
+              <div class="set-row-left">
+                <span class="set-row-icon">⚖️</span>
+                <div class="set-row-text">
+                  <span class="set-row-label" data-i18n="setUnits">Unidades de Potencia & Vel.</span>
+                  <small class="set-row-sub" data-i18n="setUnitsSub">HP / CV • km/h</small>
+                </div>
+              </div>
+              <span class="set-row-arrow">›</span>
+            </button>
+
+            <button class="settings-row-btn" data-action="set-themes">
+              <div class="set-row-left">
+                <span class="set-row-icon">🌓</span>
+                <div class="set-row-text">
+                  <span class="set-row-label" data-i18n="setThemes">Temas & Apariencia</span>
+                  <small class="set-row-sub" id="setting-current-theme-text">Modo Oscuro</small>
+                </div>
+              </div>
+              <span class="set-row-arrow">›</span>
+            </button>
+
+            <button class="settings-row-btn" data-action="set-language" id="btn-setting-language">
+              <div class="set-row-left">
+                <span class="set-row-icon">🌐</span>
+                <div class="set-row-text">
+                  <span class="set-row-label" data-i18n="setLanguage">Idiomas</span>
+                  <small class="set-row-sub" id="setting-current-lang-text">Español (Latinoamérica)</small>
+                </div>
+              </div>
+              <span class="set-row-arrow">›</span>
+            </button>
+
+            <div class="settings-row-static">
+              <div class="set-row-left">
+                <span class="set-row-icon">🔔</span>
+                <div class="set-row-text">
+                  <span class="set-row-label" data-i18n="setNotifs">Notificaciones</span>
+                  <small class="set-row-sub" data-i18n="setNotifsSub">Alertas de avistamientos cercanos</small>
+                </div>
+              </div>
+              <label class="switch-toggle-ui">
+                <input type="checkbox" id="set-notifs" checked>
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+
+            <div class="settings-row-static">
+              <div class="set-row-left">
+                <span class="set-row-icon">📸</span>
+                <div class="set-row-text">
+                  <span class="set-row-label" data-i18n="setGallery">Guardar fotos en Galería</span>
+                  <small class="set-row-sub" data-i18n="setGallerySub">Almacenar copias de tus capturas en el
+                    carrete</small>
+                </div>
+              </div>
+              <label class="switch-toggle-ui">
+                <input type="checkbox" id="set-save-gallery" checked>
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+
+            <button class="settings-row-btn" data-action="set-more-prefs">
+              <div class="set-row-left">
+                <span class="set-row-icon">🔧</span>
+                <span class="set-row-label" data-i18n="setMorePrefs">Otras preferencias</span>
+              </div>
+              <span class="set-row-arrow">›</span>
+            </button>
+
+          </div>
+        </div>
+
+        <!-- SECCIÓN 3: RECURSOS -->
+        <div class="settings-group">
+          <div class="settings-group-header" data-i18n="settingsResources">Recursos</div>
+          <div class="settings-group-list">
+
+            <button class="settings-row-btn" data-action="set-faq">
+              <div class="set-row-left">
+                <span class="set-row-icon">❓</span>
+                <span class="set-row-label" data-i18n="setFaq">Preguntas Frecuentes</span>
+              </div>
+              <span class="set-row-arrow">›</span>
+            </button>
+
+            <button class="settings-row-btn" data-action="set-news">
+              <div class="set-row-left">
+                <span class="set-row-icon">🕒</span>
+                <div class="set-row-text">
+                  <span class="set-row-label" data-i18n="setNews">Novedades & Actualizaciones</span>
+                  <small class="set-row-sub">v2.4.0 (Custom Garage Edition)</small>
+                </div>
+              </div>
+              <span class="set-row-arrow">›</span>
+            </button>
+
+            <!-- Cerrar Sesión -->
+            <button class="settings-row-btn" id="btn-logout" style="color: #f87171;">
+              <div class="set-row-left">
+                <span class="set-row-icon">🚪</span>
+                <span class="set-row-label">Cerrar Sesión</span>
+              </div>
+              <span class="set-row-arrow">›</span>
+            </button>
+
+            <!-- Restablecer datos -->
+            <button class="settings-row-btn btn-danger-action" id="btn-reset-data">
+              <div class="set-row-left">
+                <span class="set-row-icon">🗑️</span>
+                <span class="set-row-label" data-i18n="setReset">Restablecer datos de fábrica</span>
+              </div>
+              <span class="set-row-arrow">›</span>
+            </button>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </dialog>
+
+  <!-- MODAL: SELECCIÓN DE IDIOMA (LOS 5 MÁS HABLADOS DEL PLANETA) -->
+  <dialog id="modal-language" class="sub-modal language-modal">
+    <div class="sub-modal-card language-card">
+      <div class="sub-modal-header">
+        <div class="sub-header-title">
+          <span class="sub-header-icon">🌐</span>
+          <h3 data-i18n="langModalTitle">Seleccionar Idioma</h3>
+        </div>
+        <button class="btn-close-submodal" data-close="modal-language">&times;</button>
+      </div>
+      <p class="sub-modal-desc" data-i18n="langModalDesc">Elige tu idioma entre los 5 más hablados del mundo.</p>
+
+      <div class="languages-options-list">
+
+        <!-- 1. Inglés -->
+        <div class="lang-option-card" data-lang="en">
+          <div class="lang-opt-left">
+            <span class="lang-flag">🇺🇸</span>
+            <div class="lang-meta">
+              <strong>English</strong>
+            </div>
+          </div>
+          <div class="lang-check-circle"></div>
+        </div>
+
+        <!-- 2. Chino Mandarín -->
+        <div class="lang-option-card" data-lang="zh">
+          <div class="lang-opt-left">
+            <span class="lang-flag">🇨🇳</span>
+            <div class="lang-meta">
+              <strong>中文 (Mandarín)</strong>
+            </div>
+          </div>
+          <div class="lang-check-circle"></div>
+        </div>
+
+        <!-- 3. Hindi -->
+        <div class="lang-option-card" data-lang="hi">
+          <div class="lang-opt-left">
+            <span class="lang-flag">🇮🇳</span>
+            <div class="lang-meta">
+              <strong>हिन्दी (Hindi)</strong>
+            </div>
+          </div>
+          <div class="lang-check-circle"></div>
+        </div>
+
+        <!-- 4. Español (Activo por defecto) -->
+        <div class="lang-option-card selected" data-lang="es">
+          <div class="lang-opt-left">
+            <span class="lang-flag">🇪🇸</span>
+            <div class="lang-meta">
+              <strong>Español (Latinoamérica)</strong>
+            </div>
+          </div>
+          <div class="lang-check-circle">✓</div>
+        </div>
+
+        <!-- 5. Francés -->
+        <div class="lang-option-card" data-lang="fr">
+          <div class="lang-opt-left">
+            <span class="lang-flag">🇫🇷</span>
+            <div class="lang-meta">
+              <strong>Français (Francés)</strong>
+            </div>
+          </div>
+          <div class="lang-check-circle"></div>
+        </div>
+
+      </div>
+
+      <button class="btn-confirm-lang" id="btn-save-language" data-i18n="langApplyBtn">Aplicar Idioma</button>
+    </div>
+  </dialog>
+
+  <!-- MODAL: CONFIRMACIÓN DE CAMBIO DE IDIOMA -->
+  <dialog id="modal-confirm-language" class="sub-modal shop-confirm-modal">
+    <div class="sub-modal-card shop-confirm-card">
+      <div class="confirm-icon-glow" id="confirm-lang-flag-wrapper">
+        <span id="confirm-lang-flag" style="font-size: 2.2rem;">🌐</span>
+      </div>
+      <div class="confirm-content">
+        <span class="confirm-kicker" data-i18n="confirmLangKicker">CAMBIAR IDIOMA</span>
+        <h3 id="confirm-lang-title">¿Cambiar el idioma de TurboSpotter?</h3>
+        <p id="confirm-lang-desc">La interfaz se actualizará a <strong id="confirm-lang-target-name">English</strong>.
+        </p>
+      </div>
+
+      <div class="confirm-modal-actions">
+        <button class="btn-cancel-confirm" id="btn-cancel-lang-confirm" data-i18n="btnCancel">Cancelar</button>
+        <button class="btn-proceed-confirm" id="btn-proceed-lang-confirm" data-i18n="btnConfirmLang">Sí, cambiar
+          idioma</button>
+      </div>
+    </div>
+  </dialog>
+
+
+  <!-- MODAL: TEMAS & APARIENCIA (MODO CLARO Y OSCURO) -->
+  <dialog id="modal-theme" class="sub-modal theme-modal">
+    <div class="sub-modal-card theme-card">
+      <div class="sub-modal-header">
+        <div class="sub-header-title">
+          <span class="sub-header-icon">🌓</span>
+          <h3>Temas & Apariencia</h3>
+        </div>
+        <button class="btn-close-submodal" data-close="modal-theme" aria-label="Cerrar">&times;</button>
+      </div>
+      <p class="sub-modal-desc">Personaliza la estética visual de la app según tus gustos.</p>
+
+      <div class="theme-options-list">
+        <!-- Opción Oscuro -->
+        <div class="theme-option-card selected" data-theme="dark" id="theme-card-dark">
+          <div class="theme-opt-left">
+            <div class="theme-preview dark-preview">
+              <span>🌙</span>
+            </div>
+            <div class="theme-meta">
+              <strong>Modo Oscuro</strong>
+              <small>Estética deportiva y cinematográfica (OLED)</small>
+            </div>
+          </div>
+          <div class="theme-check-circle" id="check-theme-dark">✓</div>
+        </div>
+
+        <!-- Opción Claro -->
+        <div class="theme-option-card" data-theme="light" id="theme-card-light">
+          <div class="theme-opt-left">
+            <div class="theme-preview light-preview">
+              <span>☀️</span>
+            </div>
+            <div class="theme-meta">
+              <strong>Modo Claro</strong>
+              <small>Limpio, brillante y de alto contraste diurno</small>
+            </div>
+          </div>
+          <div class="theme-check-circle" id="check-theme-light"></div>
+        </div>
+      </div>
+
+      <button class="btn-confirm-theme" id="btn-save-theme">Aplicar Tema</button>
+    </div>
+  </dialog>
+
+  <!-- MODAL: EDITAR PERFIL DE SPOTTER (FOTO, NOMBRE Y BIOGRAFÍA) -->
+  <dialog id="modal-edit-profile" class="sub-modal edit-profile-modal">
+    <div class="sub-modal-card edit-profile-card">
+
+      <div class="sub-modal-header">
+        <div class="sub-header-title">
+          <span class="sub-header-icon">👤</span>
+          <h3 data-i18n="editProfileTitle">Editar Perfil de Spotter</h3>
+        </div>
+        <button class="btn-close-submodal" data-close="modal-edit-profile" aria-label="Cerrar">&times;</button>
+      </div>
+
+      <div class="edit-profile-body">
+
+        <!-- SECCIÓN 1: FOTO DE PERFIL / AVATAR -->
+        <div class="edit-avatar-section">
+          <div class="edit-avatar-preview-wrap">
+            <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=180&q=80"
+              alt="Vista previa avatar" class="edit-avatar-preview" id="edit-avatar-preview-img" />
+            <label class="btn-avatar-upload" for="input-avatar-file" title="Subir foto desde tu dispositivo">
+              📷
+            </label>
+            <input type="file" id="input-avatar-file" accept="image/*" style="display: none;" />
+          </div>
+
+          <div class="edit-avatar-info">
+            <span class="edit-field-label" data-i18n="editChooseAvatar">Elige un avatar o sube una foto</span>
+            <div class="avatar-presets-grid" id="avatar-presets-grid">
+              <!-- Avatares predefinidos listados dinámicamente -->
+            </div>
+          </div>
+        </div>
+
+        <!-- SECCIÓN 2: @USUARIO -->
+        <div class="edit-form-group">
+          <label class="edit-form-label" for="edit-input-username" data-i18n="editUsernameLabel">Nombre de Usuario
+            (@handle)</label>
+          <div class="edit-input-prefix-wrapper">
+            <span class="edit-input-prefix">@</span>
+            <input type="text" id="edit-input-username" class="edit-text-input has-prefix" placeholder="juliospotter"
+              maxlength="25" />
+          </div>
+        </div>
+
+        <!-- SECCIÓN 3: BIOGRAFÍA (BIO) -->
+        <div class="edit-form-group">
+          <div class="edit-label-row">
+            <label class="edit-form-label" for="edit-input-bio" data-i18n="editBioLabel">Biografía (Bio)</label>
+            <span class="bio-char-count" id="bio-char-count">0/150</span>
+          </div>
+          <textarea id="edit-input-bio" class="edit-textarea-input"
+            placeholder="Cuéntale a la comunidad sobre tu pasión por los autos, motos o spots favoritos..."
+            maxlength="150" rows="3"></textarea>
+        </div>
+
+      </div>
+
+      <div class="edit-profile-actions">
+        <button class="btn-cancel-confirm" id="btn-cancel-edit-profile" data-i18n="btnCancel">Cancelar</button>
+        <button class="btn-save-profile" id="btn-save-edit-profile" data-i18n="btnSaveProfile">💾 Guardar
+          Cambios</button>
+      </div>
+
+    </div>
+  </dialog>
+
+  <!-- MODAL / PANTALLA DE COMPARACIÓN DE AMIGOS (RANGO, AUTOS Y MOTOS) -->
+  <dialog id="modal-compare" class="compare-modal">
+    <div class="compare-modal-backdrop"></div>
+    <div class="compare-modal-card">
+      <div class="compare-modal-header">
+        <div class="compare-title-wrap">
+          <span class="compare-eyebrow">⚔️ VERSUS SPOTTER</span>
+          <h3 id="compare-modal-title">Comparativa de Garaje & Rango</h3>
+        </div>
+        <button id="btn-close-compare" class="btn-close-compare" aria-label="Cerrar comparativa">✕</button>
+      </div>
+
+      <!-- Contenido Dinámico de la Comparación -->
+      <div class="compare-modal-body" id="compare-modal-body">
+        <!-- Generado dinámicamente desde JS -->
+      </div>
+    </div>
+  </dialog>
+
+  <!-- MODAL / PANTALLA DE CÁMARA (QUICKSPOT CON CÁMARA REAL) -->
+  <dialog id="camera-modal" class="camera-modal">
+    <div class="camera-modal-backdrop"></div>
+    <div class="camera-modal-card">
+
+      <!-- Visor con soporte de Video Real y Canvas -->
+      <div class="camera-lens-viewfinder" id="camera-viewfinder">
+        <!-- Elemento de video para streaming real -->
+        <video id="camera-video" autoplay playsinline muted class="camera-video-stream"></video>
+        <!-- Canvas oculto para capturar el cuadro de la foto -->
+        <canvas id="camera-canvas" class="camera-canvas-hidden"></canvas>
+
+        <!-- Elemento de preview cuando se dispara o sube foto -->
+        <img id="camera-captured-preview" class="camera-captured-preview" alt="Foto capturada" style="display: none;">
+
+        <!-- UI Gamer / HUD sobre el visor -->
+        <div class="viewfinder-hud">
+          <div class="viewfinder-tag" id="camera-status-tag">🔴 REC • CÁMARA VIVO</div>
+          <button id="btn-switch-camera" class="btn-icon-hud" title="Cambiar cámara (frontal/trasera)"
+            aria-label="Cambiar cámara">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round">
+              <path d="M20 10c0-4.4-3.6-8-8-8s-8 3.6-8 8v2l-3-3 3 7 7-3-3-3v-3c0-3.3 2.7-6 6-6s6 2.7 6 6v1"></path>
+              <path d="M4 14c0 4.4 3.6 8 8 8s8-3.6 8-8v-2l3 3-3-7-7 3 3 3v3c0 3.3-2.7 6-6 6s-6-2.7-6-6v-1"></path>
+            </svg>
+          </button>
+        </div>
+
+        <!-- Crosshair y guías de auto-enfoque -->
+        <div class="viewfinder-reticle">
+          <span class="corner-bracket top-left"></span>
+          <span class="corner-bracket top-right"></span>
+          <span class="corner-bracket bottom-left"></span>
+          <span class="corner-bracket bottom-right"></span>
+          <span class="scanner-laser"></span>
+        </div>
+
+        <!-- Mensaje / Fallback si no hay permisos de cámara -->
+        <div class="camera-fallback" id="camera-fallback" style="display: none;">
+          <span class="camera-placeholder-icon">📷</span>
+          <p id="camera-fallback-msg">No se pudo acceder a la cámara. Puedes subir una foto desde tu galería o archivos.
+          </p>
+          <label for="camera-file-input" class="btn-upload-file">
+            Subir foto de vehículo
+          </label>
+        </div>
+      </div>
+
+      <!-- Overlay de escaneo con IA activo -->
+      <div class="ai-scanning-overlay" id="ai-scanning-overlay" style="display: none;">
+        <div class="ai-spinner-ring"></div>
+        <div class="ai-scan-text">
+          <span class="ai-scan-title">🧠 ESCANEANDO VEHÍCULO...</span>
+          <span class="ai-scan-sub" id="ai-scan-status-text">Analizando silueta, parrilla y modelo con Gemini
+            Vision...</span>
+        </div>
+      </div>
+
+      <!-- Tarjeta interactiva post-captura con resultados de la IA -->
+      <div class="camera-spot-form" id="camera-spot-form" style="display: none;">
+        <div class="ai-detection-badge-wrap">
+          <span class="ai-verified-badge" id="ai-verified-badge">✨ Identificado por IA</span>
+          <span class="ai-rarity-pill rarity-comun" id="spot-detected-rarity">COMÚN</span>
+        </div>
+
+        <div class="spot-form-inputs">
+          <div class="spot-input-group">
+            <label for="spot-custom-name">Vehículo Detectado</label>
+            <input type="text" id="spot-custom-name" placeholder="Ej: Honda CR-V 2024" class="spot-input" />
+          </div>
+
+          <div class="spot-meta-row">
+            <div class="spot-meta-col">
+              <label for="spot-brand-input">Marca</label>
+              <input type="text" id="spot-brand-input" placeholder="Honda" class="spot-input-sm" />
+            </div>
+            <div class="spot-meta-col">
+              <label for="spot-power-input">Potencia estimada</label>
+              <input type="text" id="spot-power-input" placeholder="190 CV" class="spot-input-sm" />
+            </div>
+            <div class="spot-meta-col">
+              <label for="spot-price-input">Precio aprox. (USD)</label>
+              <input type="text" id="spot-price-input" placeholder="$35,000" class="spot-input-sm" />
+            </div>
+          </div>
+        </div>
+
+        <div class="spot-form-actions">
+          <button id="btn-save-spot" class="btn-save-spot">✨ Guardar en mi Garaje</button>
+          <button id="btn-retake-photo" class="btn-retake">🔄 Repetir Foto</button>
+        </div>
+      </div>
+
+      <!-- Controles del disparador (cuando la cámara está activa) -->
+      <div class="camera-controls" id="camera-controls-default">
+        <!-- Input de archivo oculto para subir fotos desde galería/archivo -->
+        <input type="file" id="camera-file-input" accept="image/*" capture="environment" style="display: none;">
+
+        <label for="camera-file-input" class="btn-action-side" title="Subir desde galería"
+          aria-label="Subir foto desde archivo">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+            stroke-linejoin="round">
+            <rect width="18" height="18" x="3" y="3" rx="2" ry="2"></rect>
+            <circle cx="9" cy="9" r="2"></circle>
+            <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"></path>
+          </svg>
+          <span>Galería</span>
+        </label>
+
+        <button id="btn-shoot-photo" class="btn-shutter" aria-label="Disparar foto">
+          <span class="shutter-inner"></span>
+        </button>
+
+        <button id="btn-close-camera" class="btn-close-modal" aria-label="Cerrar cámara">Cerrar</button>
+      </div>
+
+    </div>
+  </dialog>
+
+  <!-- BARRA DE NAVEGACIÓN INFERIOR (ESTILO MODERNO / APPS GAMIFICADAS) -->
+  <nav class="bottom-nav-container" aria-label="Navegación principal">
+    <div class="bottom-nav-bar">
+      <!-- 1. FEED -->
+      <button class="nav-item" data-target="feed" aria-label="Feed de la comunidad">
+        <div class="nav-icon-wrapper icon-wrap-feed">
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 3L2 12h3v8h6v-6h2v6h6v-8h3L12 3z" />
+          </svg>
+        </div>
+        <span class="nav-label" data-i18n="navFeed">Feed</span>
+      </button>
+
+      <!-- 2. GARAJE -->
+      <button class="nav-item active" data-target="garage" aria-label="Garaje de autos y motos">
+        <div class="nav-icon-wrapper icon-wrap-garage">
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <path
+              d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.21.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.85 7h10.29l1.04 3H5.81l1.04-3zM19 17H5v-4.66l.12-.34h13.77l.11.34V17z" />
+            <circle cx="7.5" cy="14.5" r="1.5" />
+            <circle cx="16.5" cy="14.5" r="1.5" />
+          </svg>
+        </div>
+        <span class="nav-label" data-i18n="navGarage">Garaje</span>
+      </button>
+
+      <!-- 3. CÁMARA (QUICKSPOT) -->
+      <button class="nav-item" id="btn-nav-camera" data-target="camera" aria-label="Escanear con cámara">
+        <div class="nav-icon-wrapper icon-wrap-camera">
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <circle cx="12" cy="12" r="3.2" />
+            <path
+              d="M9 2L7.17 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2h-3.17L15 2H9zm3 15c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5z" />
+          </svg>
+        </div>
+        <span class="nav-label" data-i18n="navCamera">Cámara</span>
+      </button>
+
+      <!-- 4. AMIGOS -->
+      <button class="nav-item" data-target="friends" aria-label="Comunidad de amigos">
+        <div class="nav-icon-wrapper icon-wrap-friends">
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <path
+              d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z" />
+          </svg>
+        </div>
+        <span class="nav-label" data-i18n="navFriends">Amigos</span>
+      </button>
+
+      <!-- 5. RANKING -->
+      <button class="nav-item" data-target="ranking" aria-label="Ranking de spotters">
+        <div class="nav-icon-wrapper icon-wrap-ranking">
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <path
+              d="M12 2l2.9 6.26 6.88.58-5.21 4.54 1.58 6.74L12 16.65 5.85 20.12 7.43 13.38 2.22 8.84l6.88-.58L12 2z" />
+          </svg>
+        </div>
+        <span class="nav-label" data-i18n="navRanking">Ranking</span>
+      </button>
+
+      <!-- 6. PERFIL (DESTACADO ESPECIAL) -->
+      <button class="nav-item nav-item-profile" data-target="profile" aria-label="Mi perfil">
+        <div class="nav-profile-circle">
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <path
+              d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
+          </svg>
+        </div>
+        <span class="nav-label" data-i18n="navProfile">Perfil</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- OVERLAY / MODAL: CELEBRACIÓN DE SUBIDA DE NIVEL -->
+  <div id="level-up-overlay" class="level-up-overlay" aria-hidden="true">
+    <div class="level-up-card">
+      <div class="level-up-rays"></div>
+      
+      <div class="level-up-badge-container">
+        <div class="level-up-badge-halo"></div>
+        <div class="level-up-badge-circle">
+          <span class="lvl-sub">NIVEL</span>
+          <span class="lvl-num" id="level-up-display-num">2</span>
+        </div>
+      </div>
+
+      <h2 class="level-up-title">¡SUBISTE DE NIVEL!</h2>
+      <p class="level-up-subtitle">¡Tu estatus como spotter sigue en ascenso! Continúa cazando leyendas.</p>
+
+      <div class="level-up-rewards-box">
+        <div class="level-reward-item">
+          <span class="reward-icon">💎</span>
+          <div class="reward-info">
+            <span>BONO EXTRA</span>
+            <strong id="level-up-reward-coins">+100 Nitrio</strong>
+          </div>
+        </div>
+        <div class="level-reward-item">
+          <span class="reward-icon">⚡</span>
+          <div class="reward-info">
+            <span>RANGO Y PRESTIGIO</span>
+            <strong>Ascendiendo</strong>
+          </div>
+        </div>
+      </div>
+
+      <button class="btn-level-up-claim" id="btn-claim-level-up">¡GENIAL, A CAZAR!</button>
+    </div>
+  </div>
+
+  <!-- OVERLAY / MODAL: CELEBRACIÓN DE SUBIDA DE RANGO (RANK UP) -->
+  <div id="rank-up-overlay" class="rank-up-overlay" aria-hidden="true">
+    <div class="rank-up-card">
+      <div class="rank-up-golden-rays"></div>
+
+      <div class="rank-up-tag-banner">¡NUEVO RANGO DESBLOQUEADO!</div>
+
+      <div class="rank-up-medal-container">
+        <div class="rank-up-medal-halo" id="rank-up-halo"></div>
+        <div class="rank-up-medal-display" id="rank-up-medal-svg-box">
+          <!-- Medalla SVG inyectada dinámicamente -->
+        </div>
+      </div>
+
+      <h2 class="rank-up-name-title" id="rank-up-name-display">Oro</h2>
+      <div class="rank-up-epithet" id="rank-up-title-display">Ojo de Lince</div>
+
+      <div class="rank-up-perks-box">
+        <div class="rank-up-perk-row">
+          <span class="rank-up-perk-icon">🎖️</span>
+          <span>Insignia oficial desbloqueada a todo color en tu perfil.</span>
+        </div>
+        <div class="rank-up-perk-row">
+          <span class="rank-up-perk-icon">👑</span>
+          <span>Ascenso destacado en la tabla de clasificación mundial.</span>
+        </div>
+      </div>
+
+      <button class="btn-rank-up-claim" id="btn-claim-rank-up">¡PORTAR CON ORGULLO!</button>
+    </div>
+  </div>
+
+  <!-- FLASH DE CÁMARA OBTURADOR -->
+  <div id="camera-shutter-flash" class="camera-shutter-flash" aria-hidden="true"></div>
+
+  <!-- MODAL: CONFIRMACIÓN DE SPOT DUPLICADO -->
+  <dialog id="modal-duplicate-spot" class="sub-modal duplicate-spot-modal">
+    <div class="sub-modal-card duplicate-modal-card">
+      <div class="duplicate-header-icon">⚠️</div>
+      <h3 class="duplicate-modal-title">¡Vehículo Duplicado!</h3>
+      <p class="duplicate-modal-desc">
+        Ya tienes este modelo registrado en tu garaje:
+      </p>
+
+      <div class="duplicate-car-preview-pill">
+        <span class="duplicate-car-tag" id="duplicate-car-name">BMW M3 Competition</span>
+      </div>
+
+      <div class="duplicate-warning-box">
+        <div class="duplicate-warning-item">
+          <span>❌</span>
+          <strong>0 XP</strong> (No otorga experiencia)
+        </div>
+        <div class="duplicate-warning-item">
+          <span>❌</span>
+          <strong>0 Nitrio</strong> (No otorga gemas)
+        </div>
+      </div>
+
+      <p class="duplicate-question-text">
+        ¿Estás seguro de que deseas guardar este duplicado de todos modos en tu garaje?
+      </p>
+
+      <div class="duplicate-actions-grid">
+        <button class="btn-duplicate-cancel" id="btn-duplicate-cancel">Descartar Spot</button>
+        <button class="btn-duplicate-confirm" id="btn-duplicate-confirm">Guardar Duplicado</button>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- OVERLAY / MODAL: CELEBRACIÓN DE NUEVO SPOT -->
+  <div id="new-spot-overlay" class="new-spot-overlay" aria-hidden="true">
+    <div class="new-spot-card">
+      <div class="new-spot-header-tag">📸 ¡NUEVO SPOT REGISTRADO!</div>
+
+      <div class="new-spot-img-wrap">
+        <img src="" alt="Auto cazado" id="new-spot-preview-img" class="new-spot-img-preview" />
+        <span class="new-spot-rarity-pill" id="new-spot-rarity-badge">Común</span>
+      </div>
+
+      <h3 class="new-spot-car-name" id="new-spot-car-name">Porsche 911 GT3 RS</h3>
+      <div class="new-spot-car-brand" id="new-spot-car-brand">Porsche • 525 CV</div>
+
+      <div class="new-spot-rewards-grid">
+        <div class="new-spot-reward-badge">
+          <span>⚡</span>
+          <strong id="new-spot-reward-xp">+25 XP</strong>
+        </div>
+        <div class="new-spot-reward-badge">
+          <span>💎</span>
+          <strong id="new-spot-reward-coins">+20 Nitrio</strong>
+        </div>
+      </div>
+
+      <button class="btn-new-spot-confirm" id="btn-confirm-new-spot">GUARDAR EN EL GARAJE</button>
+    </div>
+  </div>
+
+  <!-- Enlazamos nuestro motor de interactividad JavaScript -->
+  <script src="app.js?v=2.7.1"></script>
+</body>
+
+</html>
