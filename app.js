@@ -3201,34 +3201,106 @@ function capturarFotoDesdeVideo() {
 
 // Procesar foto subida desde archivo/galería
 const btnTriggerGallery = document.getElementById('btn-trigger-gallery');
-if (btnTriggerGallery && cameraFileInput) {
+
+async function abrirGaleriaNativaOInput() {
+  if (!verificarLimiteSpotsDiarios()) {
+    cerrarCamara();
+    if (modalPro) modalPro.showModal();
+    alert("⚠️ Límite diario alcanzado: La versión gratuita incluye 1 spot por día.\n\n¡Desbloquea TurboSpotter PRO para disfrutar de capturas y spottings ilimitados!");
+    return;
+  }
+
+  // Si Capacitor Camera está disponible en Android
+  if (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.Camera) {
+    try {
+      const { Camera, CameraSource, CameraResultType } = window.Capacitor.Plugins;
+      const image = await Camera.getPhoto({
+        quality: 85,
+        allowEditing: false,
+        resultType: CameraResultType.DataUrl,
+        source: CameraSource.Photos
+      });
+
+      if (image && image.dataUrl) {
+        capturedImageDataUrl = image.dataUrl;
+        detenerCamaraReal();
+        mostrarFormularioPostCaptura(capturedImageDataUrl);
+        return;
+      }
+    } catch (capErr) {
+      console.warn("Capacitor Camera plugin cancelado o no disponible:", capErr);
+    }
+  }
+
+  // Fallback estándar por input file
+  if (cameraFileInput) {
+    cameraFileInput.click();
+  }
+}
+
+if (btnTriggerGallery) {
   btnTriggerGallery.addEventListener('click', (e) => {
     e.preventDefault();
     e.stopPropagation();
-    cameraFileInput.click();
+    abrirGaleriaNativaOInput();
+  });
+}
+
+// También vincular el botón del fallback "Subir foto de vehículo"
+const btnUploadFallback = document.querySelector('.btn-upload-file');
+if (btnUploadFallback) {
+  btnUploadFallback.addEventListener('click', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    abrirGaleriaNativaOInput();
   });
 }
 
 if (cameraFileInput) {
   cameraFileInput.addEventListener('change', (e) => {
-    if (!verificarLimiteSpotsDiarios()) {
-      e.target.value = '';
-      cerrarCamara();
-      if (modalPro) modalPro.showModal();
-      alert("⚠️ Límite diario alcanzado: La versión gratuita incluye 1 spot por día.\n\n¡Desbloquea TurboSpotter PRO para disfrutar de capturas y spottings ilimitados!");
+    const file = e.target.files && e.target.files[0];
+    if (!file) {
+      console.log("No se seleccionó ningún archivo.");
       return;
     }
 
-    const file = e.target.files && e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        capturedImageDataUrl = event.target.result;
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const dataUrl = event.target.result;
+      if (!dataUrl) return;
+
+      // Optimizar / Redimensionar imagen para envío rápido y fluido a la IA
+      const img = new Image();
+      img.onload = () => {
+        const maxDim = 1280;
+        let w = img.width;
+        let h = img.height;
+        if (w > maxDim || h > maxDim) {
+          if (w > h) {
+            h = Math.round((h * maxDim) / w);
+            w = maxDim;
+          } else {
+            w = Math.round((w * maxDim) / h);
+            h = maxDim;
+          }
+        }
+
+        const canvas = document.createElement('canvas');
+        canvas.width = w;
+        canvas.height = h;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, w, h);
+        capturedImageDataUrl = canvas.toDataURL('image/jpeg', 0.88);
+
         detenerCamaraReal();
         mostrarFormularioPostCaptura(capturedImageDataUrl);
       };
-      reader.readAsDataURL(file);
-    }
+      img.src = dataUrl;
+    };
+    reader.onerror = (err) => {
+      console.error("Error leyendo archivo de galería:", err);
+    };
+    reader.readAsDataURL(file);
   });
 }
 
@@ -3489,15 +3561,8 @@ function ejecutarGuardadoFinal(nuevoSpot, esDuplicado = false) {
 // Disparador principal de foto
 btnShootPhoto.addEventListener('click', capturarFotoDesdeVideo);
 
-// Cerrar modal al hacer click fuera del contenedor
-cameraModal.addEventListener('click', (e) => {
-  const rect = cameraModal.getBoundingClientRect();
-  const isInDialog = (rect.top <= e.clientY && e.clientY <= rect.top + rect.height &&
-    rect.left <= e.clientX && e.clientX <= rect.left + rect.width);
-  if (!isInDialog) {
-    cerrarCamara();
-  }
-});
+// Cerrar cámara solo cuando el usuario toca explícitamente el botón X
+// (Se eliminó el click listener en el exterior del dialog que provocaba que Android cerrara la ventana al volver de la galería)
 
 // ========================================================
 // SISTEMA DE AMIGOS, SOLICITUDES Y COMPARATIVA VERSUS (con persistencia)
