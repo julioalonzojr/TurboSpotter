@@ -3256,6 +3256,15 @@ function capturarFotoDesdeVideo() {
 }
 
 // Procesar foto subida desde archivo/galería
+const btnTriggerGallery = document.getElementById('btn-trigger-gallery');
+if (btnTriggerGallery && cameraFileInput) {
+  btnTriggerGallery.addEventListener('click', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    cameraFileInput.click();
+  });
+}
+
 if (cameraFileInput) {
   cameraFileInput.addEventListener('change', (e) => {
     if (!verificarLimiteSpotsDiarios()) {
