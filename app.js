@@ -338,13 +338,13 @@ const DEFINICION_RANGOS = [
 
 // 0. Perfil del Usuario y Recompensas (con persistencia)
 const usuarioPorDefecto = {
-  nombre: "Julio Alonzo",
-  username: "juliospotter",
-  bio: "Amante del automovilismo deportivo, cazando superautos y motos exóticas en la ciudad. 🏁🏎️",
+  nombre: "Spotter",
+  username: "spotter_1",
+  bio: "Cazador de superautos y motos en la ciudad. 🏁",
   avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=250&q=80",
-  nivel: 83,
-  xp: 72,       // Porcentaje hacia el siguiente nivel (0-100)
-  monedas: 741
+  nivel: 1,
+  xp: 0,        // Comienza en 0 XP
+  monedas: 100  // Nitrio inicial de bienvenida
 };
 
 let usuario = StorageManager.get(STORAGE_KEYS.USUARIO, usuarioPorDefecto);
@@ -353,6 +353,8 @@ if (!usuario.nombre) usuario.nombre = usuarioPorDefecto.nombre;
 if (!usuario.username) usuario.username = usuarioPorDefecto.username;
 if (!usuario.bio) usuario.bio = usuarioPorDefecto.bio;
 if (!usuario.avatar) usuario.avatar = usuarioPorDefecto.avatar;
+if (typeof usuario.nivel === 'undefined') usuario.nivel = 1;
+if (typeof usuario.xp === 'undefined') usuario.xp = 0;
 
 // Elementos del HUD de Usuario y Rangos
 const userAvatarEl = document.getElementById('user-avatar');
@@ -5238,16 +5240,34 @@ if (formAuthRegister) {
       return;
     }
 
-    // Guardar nueva cuenta
+    // Guardar nueva cuenta con estadísticas limpias
     const nombreUsuario = email.split('@')[0].replace(/[^a-z0-9_]/g, '');
     cuentas[email] = {
       email: email,
-      password: password, // Almacenado localmente para demo
+      password: password,
       nombre: nombreUsuario.charAt(0).toUpperCase() + nombreUsuario.slice(1),
       username: nombreUsuario,
+      nivel: 1,
+      xp: 0,
+      monedas: 100,
+      autos: [],
+      motos: [],
       creadoEn: Date.now()
     };
     StorageManager.set(STORAGE_KEYS.AUTH_USUARIOS, cuentas);
+
+    // Reiniciar datos del usuario activo a Nivel 1 limpio
+    usuario.nombre = cuentas[email].nombre;
+    usuario.username = cuentas[email].username;
+    usuario.nivel = 1;
+    usuario.xp = 0;
+    usuario.monedas = 100;
+    autos = [];
+    motos = [];
+    StorageManager.set(STORAGE_KEYS.USUARIO, usuario);
+    StorageManager.set(STORAGE_KEYS.AUTOS, autos);
+    StorageManager.set(STORAGE_KEYS.MOTOS, motos);
+    renderizarGarajeUnificado();
 
     // Iniciar sesión activa
     iniciarSesionUsuario(cuentas[email]);
