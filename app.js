@@ -49,69 +49,13 @@ const StorageManager = {
   }
 };
 
-// 1. Datos iniciales de Autos (con persistencia)
-const autosPorDefecto = [
-  {
-    id: 1,
-    nombre: "Porsche 911 GT3 RS",
-    marca: "Porsche",
-    rareza: "epico",
-    tipo: "Auto",
-    potencia: "525 CV",
-    imagen: "https://images.unsplash.com/photo-1614162692292-7ac56d7f7f1e?auto=format&fit=crop&w=800&q=80"
-  },
-  {
-    id: 2,
-    nombre: "Ferrari SF90 Stradale",
-    marca: "Ferrari",
-    rareza: "legendario",
-    tipo: "Híbrido",
-    potencia: "1000 CV",
-    imagen: "https://images.unsplash.com/photo-1592198084033-aade902d1aae?auto=format&fit=crop&w=800&q=80"
-  },
-  {
-    id: 3,
-    nombre: "BMW M4 Competition",
-    marca: "BMW",
-    rareza: "raro",
-    tipo: "Auto",
-    potencia: "510 CV",
-    imagen: "https://images.unsplash.com/photo-1555215695-3004980ad54e?auto=format&fit=crop&w=800&q=80"
-  }
-];
+// 1. Datos iniciales de Autos (inicio limpio para nuevos jugadores)
+const autosPorDefecto = [];
 
 let autos = StorageManager.get(STORAGE_KEYS.AUTOS, autosPorDefecto);
 
-// 2. Datos iniciales de Motos (con persistencia)
-const motosPorDefecto = [
-  {
-    id: 101,
-    nombre: "Ducati Panigale V4 R",
-    marca: "Ducati",
-    rareza: "legendario",
-    tipo: "Superbike",
-    potencia: "218 CV",
-    imagen: "https://images.unsplash.com/photo-1568772585407-9361f9bf3a87?auto=format&fit=crop&w=800&q=80"
-  },
-  {
-    id: 102,
-    nombre: "Yamaha YZF-R1",
-    marca: "Yamaha",
-    rareza: "epico",
-    tipo: "Superbike",
-    potencia: "200 CV",
-    imagen: "https://images.unsplash.com/photo-1558981403-c5f9899a28bc?auto=format&fit=crop&w=800&q=80"
-  },
-  {
-    id: 103,
-    nombre: "Kawasaki Ninja H2",
-    marca: "Kawasaki",
-    rareza: "legendario",
-    tipo: "Sobrealimentada",
-    potencia: "231 CV",
-    imagen: "https://images.unsplash.com/photo-1599819811279-d5ad9cccf838?auto=format&fit=crop&w=800&q=80"
-  }
-];
+// 2. Datos iniciales de Motos (inicio limpio para nuevos jugadores)
+const motosPorDefecto = [];
 
 let motos = StorageManager.get(STORAGE_KEYS.MOTOS, motosPorDefecto);
 
