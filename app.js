@@ -5167,12 +5167,19 @@ if (authTabRegister && authTabLogin) {
 if (formAuthRegister) {
   formAuthRegister.addEventListener('submit', (e) => {
     e.preventDefault();
+    const rawUsername = document.getElementById('reg-username').value.trim();
     const email = document.getElementById('reg-email').value.trim().toLowerCase();
     const password = document.getElementById('reg-password').value;
     const passwordConfirm = document.getElementById('reg-password-confirm').value;
 
-    if (!email || !password) {
+    if (!rawUsername || !email || !password) {
       mostrarErrorAuth(authRegisterError, "Por favor, completa todos los campos.");
+      return;
+    }
+
+    const usernameLimpio = rawUsername.replace(/[^a-zA-Z0-9_]/g, '').toLowerCase();
+    if (usernameLimpio.length < 3) {
+      mostrarErrorAuth(authRegisterError, "El nombre de usuario debe tener al menos 3 caracteres.");
       return;
     }
 
@@ -5194,12 +5201,11 @@ if (formAuthRegister) {
     }
 
     // Guardar nueva cuenta con estadísticas limpias
-    const nombreUsuario = email.split('@')[0].replace(/[^a-z0-9_]/g, '');
     cuentas[email] = {
       email: email,
       password: password,
-      nombre: nombreUsuario.charAt(0).toUpperCase() + nombreUsuario.slice(1),
-      username: nombreUsuario,
+      nombre: rawUsername,
+      username: usernameLimpio,
       nivel: 1,
       xp: 0,
       monedas: 100,
@@ -5212,6 +5218,7 @@ if (formAuthRegister) {
     // Reiniciar datos del usuario activo a Nivel 1 limpio
     usuario.nombre = cuentas[email].nombre;
     usuario.username = cuentas[email].username;
+    usuario.email = email;
     usuario.nivel = 1;
     usuario.xp = 0;
     usuario.monedas = 100;
@@ -5270,8 +5277,15 @@ function iniciarSesionUsuario(datosCuenta) {
   if (datosCuenta.nombre && usuario) {
     usuario.nombre = datosCuenta.nombre;
     usuario.username = datosCuenta.username;
+    usuario.email = datosCuenta.email;
     StorageManager.set(STORAGE_KEYS.USUARIO, usuario);
     actualizarHUDUsuario();
+
+    // Actualizar correo privado en Configuración (oculto de perfil)
+    const settingsEmailVal = document.getElementById('settings-account-email-val');
+    if (settingsEmailVal && datosCuenta.email) {
+      settingsEmailVal.textContent = datosCuenta.email;
+    }
   }
 
   // Ocultar pantalla de auth con transición suave
@@ -5347,6 +5361,10 @@ function verificarEstadoSesionYArrancar() {
     } else {
       // SÍ hay sesión iniciada: el usuario entra directo a la app sin interrupciones
       console.log("Sesión activa encontrada para:", sesionActiva.email);
+      const settingsEmailVal = document.getElementById('settings-account-email-val');
+      if (settingsEmailVal && sesionActiva.email) {
+        settingsEmailVal.textContent = sesionActiva.email;
+      }
     }
   }, 1400);
 }

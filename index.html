@@ -47,9 +47,16 @@
       <!-- FORMULARIO: REGISTRO (Nueva cuenta) -->
       <form id="form-auth-register" class="auth-form-body active">
         <div class="auth-field-group">
-          <label for="reg-email" class="auth-label">Correo Electrónico</label>
+          <label for="reg-username" class="auth-label">Nombre de Usuario (@handle)</label>
           <div class="auth-input-box">
-            <span class="auth-input-icon">✉️</span>
+            <span class="auth-input-prefix-tag">@</span>
+            <input type="text" id="reg-username" class="auth-input" placeholder="tu_usuario" required maxlength="25" autocomplete="username" />
+          </div>
+        </div>
+
+        <div class="auth-field-group">
+          <label for="reg-email" class="auth-label">Correo Electrónico (Privado)</label>
+          <div class="auth-input-box">
             <input type="email" id="reg-email" class="auth-input" placeholder="ejemplo@correo.com" required autocomplete="email" />
           </div>
         </div>
@@ -57,18 +64,16 @@
         <div class="auth-field-group">
           <label for="reg-password" class="auth-label">Contraseña</label>
           <div class="auth-input-box">
-            <span class="auth-input-icon">🔒</span>
             <input type="password" id="reg-password" class="auth-input" placeholder="Mínimo 6 caracteres" required autocomplete="new-password" />
-            <button type="button" class="auth-btn-toggle-pwd" data-target="reg-password" aria-label="Mostrar contraseña">👁️</button>
+            <button type="button" class="auth-btn-toggle-pwd" data-target="reg-password" aria-label="Mostrar contraseña">👁</button>
           </div>
         </div>
 
         <div class="auth-field-group">
           <label for="reg-password-confirm" class="auth-label">Confirmar Contraseña</label>
           <div class="auth-input-box">
-            <span class="auth-input-icon">🛡️</span>
             <input type="password" id="reg-password-confirm" class="auth-input" placeholder="Repite tu contraseña" required autocomplete="new-password" />
-            <button type="button" class="auth-btn-toggle-pwd" data-target="reg-password-confirm" aria-label="Mostrar contraseña">👁️</button>
+            <button type="button" class="auth-btn-toggle-pwd" data-target="reg-password-confirm" aria-label="Mostrar contraseña">👁</button>
           </div>
         </div>
 
@@ -76,7 +81,6 @@
 
         <button type="submit" class="btn-auth-submit" id="btn-submit-register">
           <span>CREAR CUENTA & ENTRAR</span>
-          <span class="btn-auth-arrow">🚀</span>
         </button>
 
         <p class="auth-terms-note">
@@ -89,7 +93,6 @@
         <div class="auth-field-group">
           <label for="login-email" class="auth-label">Correo Electrónico</label>
           <div class="auth-input-box">
-            <span class="auth-input-icon">✉️</span>
             <input type="email" id="login-email" class="auth-input" placeholder="tu@correo.com" required autocomplete="email" />
           </div>
         </div>
@@ -97,9 +100,8 @@
         <div class="auth-field-group">
           <label for="login-password" class="auth-label">Contraseña</label>
           <div class="auth-input-box">
-            <span class="auth-input-icon">🔒</span>
             <input type="password" id="login-password" class="auth-input" placeholder="Tu contraseña" required autocomplete="current-password" />
-            <button type="button" class="auth-btn-toggle-pwd" data-target="login-password" aria-label="Mostrar contraseña">👁️</button>
+            <button type="button" class="auth-btn-toggle-pwd" data-target="login-password" aria-label="Mostrar contraseña">👁</button>
           </div>
         </div>
 
@@ -107,7 +109,6 @@
 
         <button type="submit" class="btn-auth-submit" id="btn-submit-login">
           <span>INICIAR SESIÓN</span>
-          <span class="btn-auth-arrow">⚡</span>
         </button>
       </form>
     </div>
@@ -293,18 +294,17 @@
             <span class="rank-tier-pill tier-platino" id="user-tier-pill">💠 Platino</span>
           </div>
           <span class="profile-handle" id="user-rank-title">@juliospotter • Cazador Élite</span>
-          <p class="profile-bio-text" id="profile-user-bio">Amante del automovilismo deportivo, cazando superautos y
-            motos exóticas en la ciudad. 🏁🏎️</p>
+          <p class="profile-bio-text" id="profile-user-bio">Cazando superautos y motos exóticas en la ciudad.</p>
 
           <button class="btn-edit-profile-trigger" id="btn-open-edit-profile" data-i18n="btnEditProfile">
-            ✏️ Editar Perfil
+            Editar Perfil
           </button>
 
           <div class="profile-tags">
             <span class="p-tag-level" id="btn-test-level-up" title="Toca para probar la animación de Subir de Nivel" style="cursor: pointer;"><span data-i18n="tagLevel">Nivel</span> <strong
-                id="profile-level-val">83</strong> ⚡</span>
-            <span class="p-tag-rank">Top #2 Amigos • #6 Global</span>
-            <span class="p-tag-cars" id="profile-cars-total">18 autos cazados</span>
+                id="profile-level-val">1</strong></span>
+            <span class="p-tag-rank">Top Amigos • Global</span>
+            <span class="p-tag-cars" id="profile-cars-total">0 vehículos cazados</span>
           </div>
 
           <!-- Barra de Progreso hacia el Siguiente Rango -->
@@ -812,13 +812,16 @@
               <span class="set-row-arrow">›</span>
             </button>
 
-            <button class="settings-row-btn" data-action="set-account">
+            <div class="settings-row-static" id="settings-user-email-row">
               <div class="set-row-left">
-                <span class="set-row-icon">✳️</span>
-                <span class="set-row-label" data-i18n="setAccount">Cuenta & Seguridad</span>
+                <span class="set-row-icon">🔒</span>
+                <div class="set-row-text">
+                  <span class="set-row-label">Correo de la Cuenta (Privado)</span>
+                  <small class="set-row-sub" id="settings-account-email-val">No configurado</small>
+                </div>
               </div>
-              <span class="set-row-arrow">›</span>
-            </button>
+              <span class="badge-status-ok">Protegido</span>
+            </div>
 
             <button class="settings-row-btn" data-action="set-subscription">
               <div class="set-row-left">
